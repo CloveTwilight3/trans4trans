@@ -11,7 +11,7 @@ app = FastAPI()
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change to your domain in production
+    allow_origins=["https://trans4trans.win"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
