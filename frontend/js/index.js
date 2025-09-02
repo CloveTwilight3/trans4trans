@@ -1,5 +1,5 @@
-const backendURL = "http://127.0.0.1:8003/letters"; // Change to live URL
-const wsURL = "ws://127.0.0.1:8003/ws/letters";      // Change to live URL
+const backendURL = "/api/letters";
+const wsURL = "wss://trans4trans.win/ws/letters";
 
 const lettersContainer = document.getElementById("lettersContainer");
 

@@ -1,4 +1,4 @@
-const backendURL = "http://127.0.0.1:8003";
+const backendURL = "/api";
 let jwtToken = null;
 
 // --- LOGIN ---
