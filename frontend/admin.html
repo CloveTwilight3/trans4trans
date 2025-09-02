@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Letters Admin</title>
+  <link rel="icon" type="image/gif" href="https://yuri-lover.win/animated-emojis/cl_heartbreak.gif">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-4">
+
+  <h1 class="text-3xl font-bold mb-6">Admin Panel</h1>
+
+  <!-- LOGIN -->
+  <div id="loginContainer" class="w-full max-w-md bg-gray-800 p-6 rounded-xl shadow-lg">
+    <h2 class="text-xl font-semibold mb-4">Login</h2>
+    <form id="loginForm" class="space-y-4">
+      <input type="text" id="username" placeholder="Username" class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+      <input type="password" id="password" placeholder="Password" class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded font-semibold">Login</button>
+      <p id="loginError" class="text-red-400 text-sm mt-2 hidden">Invalid credentials</p>
+    </form>
+  </div>
+
+  <!-- LETTER FORM -->
+  <div id="letterContainer" class="w-full max-w-md bg-gray-800 p-6 rounded-xl shadow-lg hidden mt-6">
+    <h2 class="text-xl font-semibold mb-4">Compose Letter</h2>
+    <form id="letterForm" class="space-y-4">
+      <label>From</label>
+      <select id="from" class="w-full p-2 rounded bg-gray-700 border border-gray-600"></select>
+
+      <label>To</label>
+      <select id="to" multiple class="w-full p-2 rounded bg-gray-700 border border-gray-600"></select>
+
+      <label>CC</label>
+      <select id="cc" multiple class="w-full p-2 rounded bg-gray-700 border border-gray-600"></select>
+
+      <label>BCC</label>
+      <select id="bcc" multiple class="w-full p-2 rounded bg-gray-700 border border-gray-600"></select>
+
+      <input type="text" id="subject" placeholder="Subject" class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+      <textarea id="body" placeholder="Body" class="w-full p-2 rounded bg-gray-700 border border-gray-600 h-32"></textarea>
+
+      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 p-2 rounded font-semibold">Send Letter</button>
+
+      <p id="successMsg" class="text-green-400 text-sm mt-2 hidden">Letter sent successfully!</p>
+      <p id="errorMsg" class="text-red-400 text-sm mt-2 hidden">Error sending letter.</p>
+    </form>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+/* style.css */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+input, select, textarea {
+  transition: all 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #3b82f6; /* Tailwind blue-500 */
+}

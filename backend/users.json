@@ -1,0 +1,12 @@
+{
+  "to": [
+    { "name": "Lena", "email": "lena@trans4trans.win" },
+    { "name": "Ex1", "email": "ex1@trans4trans.win" },
+    { "name": "Mom", "email": "mom@trans4trans.win" }
+  ],
+  "from": [
+    { "name": "Clove", "email": "clove@trans4trans.win" },
+    { "name": "Zoey", "email": "zoey@trans4trans.win" },
+    { "name": "Chelsea", "email": "chelsea@trans4trans.win" }
+  ]
+}
