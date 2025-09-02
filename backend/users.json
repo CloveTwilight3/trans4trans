@@ -1,12 +1,17 @@
 {
   "to": [
     { "name": "Lena", "email": "lena@trans4trans.win" },
-    { "name": "Ex1", "email": "ex1@trans4trans.win" },
-    { "name": "Mom", "email": "mom@trans4trans.win" }
+    { "name": "Chelsea", "email": "chelsea@trans4trans.win" },
+    { "name": "Hazel", "email": "hazel@trans4trans.win" },
+    { "name": "Mum", "email": "mum@trans4trans.win" }
   ],
   "from": [
     { "name": "Clove", "email": "clove@trans4trans.win" },
-    { "name": "Zoey", "email": "zoey@trans4trans.win" },
-    { "name": "Chelsea", "email": "chelsea@trans4trans.win" }
+    { "name": "Jessa", "email": "jessa@trans4trans.win" },
+    { "name": "Lauren", "email": "lauren@trans4trans.win" },
+    { "name": "Ren", "email": "ren@trans4trans.win" },
+    { "name": "Rylux", "email": "rylux@trans4trans.win" },
+    { "name": "Vyressa", "email": "vyre@trans4transwin" },
+    { "name": "Zyren", "email": "zyren@trans4trans.win" }
   ]
 }
