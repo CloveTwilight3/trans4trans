@@ -1,10 +1,10 @@
-from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect, Depends, APIRouter, Header
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Depends, APIRouter, Body
 from fastapi.middleware.cors import CORSMiddleware
-from auth import create_jwt_token
-from config import ADMIN_USERNAME, ADMIN_PASSWORD, JWT_SECRET_KEY, JWT_ALGORITHM
+from auth import create_jwt_token, verify_jwt_token
+from config import ADMIN_USERNAME, ADMIN_PASSWORD
 from typing import List
 from datetime import datetime
-import os, json, jwt, uuid
+import os, json, uuid
 
 app = FastAPI()
 
@@ -17,11 +17,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- Paths ---
 BASE_DIR = os.path.dirname(__file__)
 LETTERS_FILE = os.path.join(BASE_DIR, "letters.json")
 USERS_FILE = os.path.join(BASE_DIR, "users.json")
 
-# --- API Router ---
+# --- Router ---
 api_router = APIRouter(prefix="/api")
 
 # --- WebSocket Manager ---
@@ -42,10 +43,10 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-# --- JSON Helpers ---
+# --- Helpers ---
 def load_json(file):
     if not os.path.exists(file):
-        return {}
+        return [] if "letters" in file else {"to": [], "from": []}
     with open(file, "r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -53,23 +54,9 @@ def save_json(file, data):
     with open(file, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
-# --- JWT Verification ---
-def verify_jwt_token(authorization: str = Header(None)):
-    if authorization is None or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid token")
-
-    token = authorization.split(" ")[1]
-    try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-# --- Authentication ---
+# --- Login ---
 @api_router.post("/login")
-def login(username: str, password: str):
+def login(username: str = Body(...), password: str = Body(...)):
     if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
         token = create_jwt_token()
         return {"access_token": token}
@@ -90,29 +77,33 @@ def get_letter(letter_id: str):
 
 @api_router.get("/users")
 def get_users():
-    # Return the file as-is since it already has "to" and "from"
     return load_json(USERS_FILE)
 
-# --- Admin Endpoint (JSON) ---
+# --- Admin Endpoints (JWT required) ---
 @api_router.post("/letters")
-async def post_letter(request: Request, token: str = Depends(verify_jwt_token)):
-    data = await request.json()
-
+async def post_letter(
+    payload: dict = Body(...),
+    token: str = Depends(verify_jwt_token)
+):
     letters = load_json(LETTERS_FILE)
+
     new_letter = {
         "id": str(uuid.uuid4()),
-        "to": data.get("to", []),
-        "from": data.get("from", ""),
-        "cc": data.get("cc", []),
-        "bcc": data.get("bcc", []),
-        "subject": data.get("subject", ""),
-        "body": data.get("body", ""),
+        "to": payload.get("to", []),
+        "from": payload.get("from", ""),
+        "cc": payload.get("cc", []),
+        "bcc": payload.get("bcc", []),
+        "subject": payload.get("subject", ""),
+        "body": payload.get("body", ""),
         "timestamp": datetime.utcnow().isoformat(),
         "status": "unread"
     }
+
     letters.append(new_letter)
     save_json(LETTERS_FILE, letters)
+
     await manager.broadcast(new_letter)
+
     return {"message": "Letter saved successfully", "id": new_letter["id"]}
 
 # --- WebSocket Endpoint ---
@@ -121,9 +112,9 @@ async def websocket_letters(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            await websocket.receive_text()  # keep alive
+            await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
-# --- Mount API ---
+# --- Mount API Router ---
 app.include_router(api_router)
