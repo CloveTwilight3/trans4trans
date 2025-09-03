@@ -1,0 +1,13 @@
+services:
+  backend:
+    build:
+      context: ./backend      # look for Dockerfile in backend/
+      dockerfile: Dockerfile  # optional if it's named Dockerfile
+    container_name: trans4trans-backend
+    ports:
+      - "8003:8003"
+    restart: unless-stopped
+    env_file:
+      - .env                  # environment variables in root .env
+    volumes:
+      - ./backend:/app        # mount backend folder for live updates
