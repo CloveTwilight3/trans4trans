@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import List
 from auth import create_jwt_token, verify_jwt_token
 from config import ADMIN_USERNAME, ADMIN_PASSWORD
+from discord import send_discord_notification
 import os, json, uuid
 
 app = FastAPI()
@@ -109,7 +110,17 @@ async def post_letter(data: LetterRequest, token: str = Depends(verify_jwt_token
     }
     letters.append(new_letter)
     save_json(LETTERS_FILE, letters)
+    
+    # Send to WebSocket clients
     await manager.broadcast(new_letter)
+    
+    # Send Discord notification
+    try:
+        await send_discord_notification(new_letter)
+    except Exception as e:
+        # Don't fail the request if Discord notification fails
+        print(f"Discord notification failed: {e}")
+    
     return {"message": "Letter saved successfully", "id": new_letter["id"]}
 
 # --- WebSocket ---
