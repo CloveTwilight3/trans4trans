@@ -3,7 +3,8 @@
     { "name": "Lena", "email": "lena@trans4trans.win" },
     { "name": "Chelsea", "email": "chelsea@trans4trans.win" },
     { "name": "Hazel", "email": "hazel@trans4trans.win" },
-    { "name": "Mum", "email": "mum@trans4trans.win" }
+    { "name": "Mum", "email": "mum@trans4trans.win" },
+    { "name": "Everyone", "email": "everyone@trans4trans.win" }
   ],
   "from": [
     { "name": "Clove", "email": "clove@trans4trans.win" },
