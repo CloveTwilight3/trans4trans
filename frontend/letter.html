@@ -3,20 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>View Letter - Trans4Trans Letters</title>
+
+  <!-- Default title and metadata (will be updated by JS) -->
+  <title>Trans4Trans Letters</title>
+  <meta property="og:title" content="Trans4Trans Letters">
+  <meta property="og:description" content="Letters to my family, friends and exes, the things I wish I could say.">
+  <meta property="og:image" content="https://yuri-lover.win/animated-emojis/cl_heartbreak.gif">
+  <meta property="twitter:title" content="Trans4Trans Letters">
+  <meta property="twitter:description" content="Letters to my family, friends and exes, the things I wish I could say.">
+  <meta property="twitter:image" content="https://yuri-lover.win/animated-emojis/cl_heartbreak.gif">
+
   <link rel="icon" type="image/gif" href="https://yuri-lover.win/animated-emojis/cl_heartbreak.gif">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-4">
 
-  <header class="w-full max-w-3xl flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold">Trans4Trans Letters</h1>
-    <a href="index.html" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg font-semibold">Back</a>
+  <header class="w-full max-w-3xl mb-6 flex justify-between items-center">
+    <h1 id="letterSubject" class="text-3xl font-bold">Loading...</h1>
+    <a href="index.html" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold">Back</a>
   </header>
 
-  <div id="letterContainer" class="w-full max-w-3xl bg-gray-800 p-6 rounded-xl shadow-md space-y-4">
-    <p class="text-gray-400">Loading letter...</p>
+  <div id="letterContent" class="w-full max-w-3xl bg-gray-800 p-6 rounded-xl shadow-md">
+    <p class="text-gray-300">Loading letter...</p>
   </div>
 
   <script src="js/letters.js"></script>
