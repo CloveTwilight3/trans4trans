@@ -5,7 +5,7 @@ from config import ADMIN_USERNAME, ADMIN_PASSWORD
 from typing import List
 from datetime import datetime
 import os, json
-import uuid7  # Make sure to install: pip install uuid7
+import uuid  # Make sure to install: pip install uuid7
 
 app = FastAPI()
 

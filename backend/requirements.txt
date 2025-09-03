@@ -4,4 +4,3 @@ python-multipart
 PyJWT
 passlib[bcrypt]
 python-dotenv
-uuid7
