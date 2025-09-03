@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Depends, APIRouter, Body
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Depends, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from datetime import datetime
+from typing import List
 from auth import create_jwt_token, verify_jwt_token
 from config import ADMIN_USERNAME, ADMIN_PASSWORD
-from typing import List
-from datetime import datetime
 import os, json, uuid
 
 app = FastAPI()
@@ -17,7 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- Paths ---
 BASE_DIR = os.path.dirname(__file__)
 LETTERS_FILE = os.path.join(BASE_DIR, "letters.json")
 USERS_FILE = os.path.join(BASE_DIR, "users.json")
@@ -43,10 +43,10 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-# --- Helpers ---
+# --- JSON Helpers ---
 def load_json(file):
     if not os.path.exists(file):
-        return [] if "letters" in file else {"to": [], "from": []}
+        return []
     with open(file, "r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -54,10 +54,23 @@ def save_json(file, data):
     with open(file, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
+# --- Models ---
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class LetterRequest(BaseModel):
+    to: List[str]
+    from_: str
+    cc: List[str] = []
+    bcc: List[str] = []
+    subject: str
+    body: str
+
 # --- Login ---
 @api_router.post("/login")
-def login(username: str = Body(...), password: str = Body(...)):
-    if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+def login(data: LoginRequest):
+    if data.username == ADMIN_USERNAME and data.password == ADMIN_PASSWORD:
         token = create_jwt_token()
         return {"access_token": token}
     raise HTTPException(status_code=403, detail="Invalid credentials")
@@ -79,34 +92,27 @@ def get_letter(letter_id: str):
 def get_users():
     return load_json(USERS_FILE)
 
-# --- Admin Endpoints (JWT required) ---
+# --- Post Letter (Protected) ---
 @api_router.post("/letters")
-async def post_letter(
-    payload: dict = Body(...),
-    token: str = Depends(verify_jwt_token)
-):
+async def post_letter(data: LetterRequest, token: str = Depends(verify_jwt_token)):
     letters = load_json(LETTERS_FILE)
-
     new_letter = {
         "id": str(uuid.uuid4()),
-        "to": payload.get("to", []),
-        "from": payload.get("from", ""),
-        "cc": payload.get("cc", []),
-        "bcc": payload.get("bcc", []),
-        "subject": payload.get("subject", ""),
-        "body": payload.get("body", ""),
+        "to": data.to,
+        "from": data.from_,
+        "cc": data.cc,
+        "bcc": data.bcc,
+        "subject": data.subject,
+        "body": data.body,
         "timestamp": datetime.utcnow().isoformat(),
         "status": "unread"
     }
-
     letters.append(new_letter)
     save_json(LETTERS_FILE, letters)
-
     await manager.broadcast(new_letter)
-
     return {"message": "Letter saved successfully", "id": new_letter["id"]}
 
-# --- WebSocket Endpoint ---
+# --- WebSocket ---
 @app.websocket("/ws/letters")
 async def websocket_letters(websocket: WebSocket):
     await manager.connect(websocket)
@@ -116,5 +122,5 @@ async def websocket_letters(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
-# --- Mount API Router ---
+# --- Mount Router ---
 app.include_router(api_router)

@@ -10,15 +10,14 @@ const loginError = document.getElementById("loginError");
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   loginError.classList.add("hidden");
-
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
   try {
     const res = await fetch(`${backendURL}/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ username, password })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
     });
 
     if (res.ok) {
@@ -30,7 +29,7 @@ loginForm.addEventListener("submit", async (e) => {
     } else {
       loginError.classList.remove("hidden");
     }
-  } catch (err) {
+  } catch {
     loginError.classList.remove("hidden");
   }
 });
@@ -40,7 +39,6 @@ async function loadUsers() {
   const res = await fetch(`${backendURL}/users`);
   const data = await res.json();
 
-  // Populate From
   const fromSelect = document.getElementById("from");
   data.from.forEach(user => {
     const option = document.createElement("option");
@@ -49,8 +47,15 @@ async function loadUsers() {
     fromSelect.appendChild(option);
   });
 
-  // Populate To, CC, BCC
-  ["to", "cc", "bcc"].forEach(field => {
+  const toSelect = document.getElementById("to");
+  data.to.forEach(user => {
+    const option = document.createElement("option");
+    option.value = user.email;
+    option.textContent = user.name;
+    toSelect.appendChild(option);
+  });
+
+  ["cc","bcc"].forEach(field => {
     const select = document.getElementById(field);
     data.to.forEach(user => {
       const option = document.createElement("option");
@@ -71,13 +76,10 @@ letterForm.addEventListener("submit", async (e) => {
   successMsg.classList.add("hidden");
   errorMsg.classList.add("hidden");
 
-  // Convert selected options to array
-  const getSelectedValues = (id) => Array.from(document.getElementById(id).selectedOptions).map(o => o.value);
-
-  const to = getSelectedValues("to");
-  const from = document.getElementById("from").value;
-  const cc = getSelectedValues("cc");
-  const bcc = getSelectedValues("bcc");
+  const to = Array.from(document.getElementById("to").selectedOptions).map(o => o.value);
+  const from_ = document.getElementById("from").value;
+  const cc = Array.from(document.getElementById("cc").selectedOptions).map(o => o.value);
+  const bcc = Array.from(document.getElementById("bcc").selectedOptions).map(o => o.value);
   const subject = document.getElementById("subject").value;
   const body = document.getElementById("body").value;
 
@@ -88,7 +90,7 @@ letterForm.addEventListener("submit", async (e) => {
         "Authorization": `Bearer ${jwtToken}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ to, from, cc, bcc, subject, body })
+      body: JSON.stringify({ to, from_, cc, bcc, subject, body })
     });
 
     if (res.ok) {
@@ -97,7 +99,7 @@ letterForm.addEventListener("submit", async (e) => {
     } else {
       errorMsg.classList.remove("hidden");
     }
-  } catch (err) {
+  } catch {
     errorMsg.classList.remove("hidden");
   }
 });
